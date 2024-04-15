@@ -1,5 +1,1 @@
-# JWT Auth Frontend
-
-[Frontend Auth Instructions](./instructions.md)
-
-Create Your Readme.md info here
+# Websockets added to React Frontend (located on branches)
