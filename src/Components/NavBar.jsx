@@ -28,6 +28,7 @@ const NavBar = ({ toggleLogin, handleLogout }) => {
     if (toggleLogin) {
       const token = localStorage.getItem("token");
       if (token) {
+        // remember to use the new URL for the fetch using the checkController
         fetch(`${URL}/api/check/user`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -44,21 +45,20 @@ const NavBar = ({ toggleLogin, handleLogout }) => {
   }, [toggleLogin]);
 
   useEffect(() => {
+    //We only want this useEffect to run when the user is logged in
     if (toggleLogin) {
+      // This is the socket.on method to listen for the remindersDue event in the backend schedule.js file
       socket.on("remindersDue", (receivedReminders) => {
-        // Assuming receivedReminders is an array of reminders
-
         if (receivedReminders.length > 0) {
+          // This is the content for the modal
           setModalContent(`You are schedule for ${receivedReminders[0].title} at
         ${formattedDate.format(new Date(receivedReminders[0].reminder_time))}`);
+          // This is the method to open the modal
           setIsModalOpen(true);
-          // alert(`You are schedule for ${receivedReminders[0].title} at
-          // ${formattedDate.format(new Date(receivedReminders[0].reminder_time))}`);
         }
-
-        // Further processing based on your application's logic
       });
 
+      //  We need to add this return to avoid memory leaks. It turns the socket.on method off when the component is unmounted
       return () => {
         socket.off("remindersDue");
       };
@@ -87,7 +87,14 @@ const NavBar = ({ toggleLogin, handleLogout }) => {
         </div>
       )}
       <hr />
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      {/* We are creating a modal to show the reminders. It will pop up each time the socket.on method is triggered in the backend schedule.js file. We give it an onClose method to close the modal by clicking ok and we reset the modalContent and isModalOpen to false */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setModalContent("");
+        }}
+      >
         {modalContent}
       </Modal>
     </div>
