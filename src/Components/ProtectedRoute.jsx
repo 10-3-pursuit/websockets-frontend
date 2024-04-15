@@ -15,7 +15,7 @@ export const useAuth = () => {
       const token = localStorage.getItem("token");
 
       try {
-        const response = await fetch(`${URL}/api/auth/check-auth`, {
+        const response = await fetch(`${URL}/api/check/check-auth`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

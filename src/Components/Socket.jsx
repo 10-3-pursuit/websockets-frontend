@@ -1,7 +1,4 @@
 import { useEffect, useState } from "react";
-import io from "socket.io-client";
-import Modal from "./Modal";
-const socket = io("http://localhost:3003");
 
 const formattedDate = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
@@ -15,28 +12,6 @@ const formattedDate = new Intl.DateTimeFormat("en-US", {
 
 const SocketComponent = () => {
   const [reminders, setReminders] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState("");
-
-  useEffect(() => {
-    socket.on("remindersDue", (receivedReminders) => {
-      // Assuming receivedReminders is an array of reminders
-
-      if (receivedReminders.length > 0) {
-        setModalContent(`You are schedule for ${receivedReminders[0].title} at
-        ${formattedDate.format(new Date(receivedReminders[0].reminder_time))}`);
-        setIsModalOpen(true);
-        // alert(`You are schedule for ${receivedReminders[0].title} at
-        // ${formattedDate.format(new Date(receivedReminders[0].reminder_time))}`);
-      }
-
-      // Further processing based on your application's logic
-    });
-
-    return () => {
-      socket.off("remindersDue");
-    };
-  }, []);
 
   useEffect(() => {
     fetch("http://localhost:3003/reminders/1")
@@ -58,9 +33,6 @@ const SocketComponent = () => {
             </ol>
           ))}
       </ul>
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        {modalContent}
-      </Modal>
     </div>
   );
 };

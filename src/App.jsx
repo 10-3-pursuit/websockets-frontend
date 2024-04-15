@@ -47,6 +47,7 @@ function App() {
             path="/dashboard"
             element={<Dashboard handleLogout={handleLogout} />}
           />
+          <Route path="/socket" element={<Socket />} />
         </Route>
       </Routes>
     </>

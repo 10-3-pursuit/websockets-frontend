@@ -1,11 +1,26 @@
 import { useEffect, useState } from "react";
+import io from "socket.io-client";
+import Modal from "./Modal";
+const socket = io("http://localhost:3003");
 
 import { Link } from "react-router-dom";
 
 const URL = import.meta.env.VITE_BASE_URL;
 
+const formattedDate = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  //   second: "2-digit",
+  hour12: true, // Use 12-hour time; set to false for 24-hour time
+});
+
 const NavBar = ({ toggleLogin, handleLogout }) => {
   const [user, setUser] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState("");
 
   useEffect(() => {
     if (!toggleLogin) setUser(null);
@@ -13,7 +28,7 @@ const NavBar = ({ toggleLogin, handleLogout }) => {
     if (toggleLogin) {
       const token = localStorage.getItem("token");
       if (token) {
-        fetch(`${URL}/api/auth/user`, {
+        fetch(`${URL}/api/check/user`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -25,6 +40,28 @@ const NavBar = ({ toggleLogin, handleLogout }) => {
           })
           .catch((error) => console.error("Error fetching user:", error));
       }
+    }
+  }, [toggleLogin]);
+
+  useEffect(() => {
+    if (toggleLogin) {
+      socket.on("remindersDue", (receivedReminders) => {
+        // Assuming receivedReminders is an array of reminders
+
+        if (receivedReminders.length > 0) {
+          setModalContent(`You are schedule for ${receivedReminders[0].title} at
+        ${formattedDate.format(new Date(receivedReminders[0].reminder_time))}`);
+          setIsModalOpen(true);
+          // alert(`You are schedule for ${receivedReminders[0].title} at
+          // ${formattedDate.format(new Date(receivedReminders[0].reminder_time))}`);
+        }
+
+        // Further processing based on your application's logic
+      });
+
+      return () => {
+        socket.off("remindersDue");
+      };
     }
   }, [toggleLogin]);
 
@@ -50,6 +87,9 @@ const NavBar = ({ toggleLogin, handleLogout }) => {
         </div>
       )}
       <hr />
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        {modalContent}
+      </Modal>
     </div>
   );
 };
