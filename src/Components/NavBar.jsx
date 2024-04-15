@@ -20,6 +20,7 @@ const NavBar = ({ toggleLogin, handleLogout }) => {
         })
           .then((response) => response.json())
           .then((data) => {
+            console.log("navuser", data.user);
             setUser(data.user);
           })
           .catch((error) => console.error("Error fetching user:", error));

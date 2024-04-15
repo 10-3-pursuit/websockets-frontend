@@ -22,6 +22,7 @@ export const useAuth = () => {
         });
         if (response.ok) {
           const { isAuthenticated, user } = await response.json();
+          console.log("user", user);
 
           setIsAuthenticated(isAuthenticated);
           setUser(user);

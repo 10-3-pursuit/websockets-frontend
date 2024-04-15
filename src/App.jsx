@@ -7,6 +7,8 @@ import Login from "./Components/Login";
 import Dashboard from "./Components/Dashboard";
 import NavBar from "./Components/NavBar";
 import LandingPage from "./Components/LandingPage";
+import Socket from "./Components/Socket";
+import Crypto from "./Components/Crypto";
 
 function App() {
   const navigate = useNavigate();
@@ -15,7 +17,7 @@ function App() {
   async function handleLogout() {
     localStorage.removeItem("token");
 
-    await setToggleLogin(false);
+    setToggleLogin(false);
 
     navigate("/login");
   }
@@ -29,7 +31,7 @@ function App() {
       />
 
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<Socket />} />
         <Route
           path="/login"
           element={<Login setToggleLogin={setToggleLogin} />}
